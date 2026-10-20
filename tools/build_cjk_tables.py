@@ -232,7 +232,7 @@ def main():
     for tok in dropped_tokens:
         print(f"  DROPPED (not a single Han character): {tok!r}")
         if tok == "land":
-            print("  -> caught the stray 'land' token as instructed, excluded it")
+            print("  -> excluded the stray 'land' token")
 
     collisions = [c for c in ja_only_candidates if c in chinese_chars]
     ja_only_final = [c for c in ja_only_candidates if c not in chinese_chars]

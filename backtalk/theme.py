@@ -336,8 +336,6 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
     font-weight: 600;
 }}
 
-/* Sidebar toggles read as flat white on tan until they are given a fill of
-   their own, so the active state carries the accent colour. */
 #SidebarToggle {{
     background: transparent;
     border: 1px solid {C['border']};
@@ -358,12 +356,6 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
     font-weight: 600;
 }}
 
-/* Translate gets its OWN accent, not the brand coral.
-
-   It reuses #SidebarToggle for shape and spacing but overrides every colour.
-   Without these rules the checked state inherits the coral fill above, which
-   makes the app's most distinctive feature look like just another toggle --
-   and that was the one thing this control was not allowed to look like. */
 #TranslateToggle {{
     background: transparent;
     border: 1px solid {C['border']};
@@ -407,12 +399,6 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
     font-size: 12px;
 }}
 
-/* The swap control sits BETWEEN the two voice pickers, so it is deliberately
-   quiet: no fill, no border until hovered. A third heavy control between two
-   dropdowns would read as a fourth field rather than a gesture. */
-/* The voice slots are plain QWidgets used purely to group a label with its
-   combo. Without this they inherit the global QWidget background and paint a
-   grey block behind the label. */
 #VoiceSlot {{ background: transparent; }}
 
 #SwapButton {{
@@ -431,16 +417,7 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
     padding: 12px 15px;
 }}
 
-/* The engine is broken and the app cannot speak. Deliberately NOT the coral
-   used by CaptureBanner: coral is the brand and marks a normal, wanted state.
-   A user whose install is broken has to be able to tell the two apart at a
-   glance, so this one takes the danger colour and a heavier border. */
 #EngineBanner {{
-    /* An explicit rgba, NOT "{{danger}}22". Qt reads 8-digit hex as #AARRGGBB,
-       so appending an alpha pair to a #RRGGBB value silently reinterprets every
-       channel: #D4574A22 came out olive, and a screenshot of the real window is
-       what caught it. One literal works for both palettes, the same way
-       CaptureBanner uses one coral for both. */
     background: rgba(200, 82, 66, 0.16);
     border: 1px solid {C['danger']};
     border-radius: 11px;
@@ -453,15 +430,7 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
     font-weight: 600;
 }}
 
-/* The engine is running and speaking, but it may not be the build the user
-   thinks it is. This is softer than EngineBanner on purpose: audio still
-   works, so a red, alarming banner would be a false alarm every time it fires.
-   It exists because a stale developer engine served the app silently for 35
-   hours before anyone noticed - nothing was broken, so nothing complained. */
 #EngineNotice {{
-    /* Same explicit-rgba rule as EngineBanner above: never "{{working}}22".
-       Qt reads 8-digit hex as #AARRGGBB, not #RRGGBBAA, so appending an alpha
-       pair silently reinterprets every channel and produces the wrong colour. */
     background: rgba(184, 134, 11, 0.14);
     border: 1px solid {C['working']};
     border-radius: 11px;
@@ -469,9 +438,6 @@ QSlider::handle:horizontal:hover {{ background: {C['primary']}; }}
 }}
 
 #EngineNoticeText {{
-    /* NOT {C['working']}. The palette comment elsewhere in this file already
-       records that yellow text on the cream background is close to unreadable.
-       The amber marks the frame; the text stays the normal readable colour. */
     color: {C['text']};
     font-size: 14px;
     font-weight: 600;
@@ -546,7 +512,6 @@ QListWidget::item:selected {{
 }}
 #TickButton:disabled {{ background: transparent; }}
 
-/* Voices page: one collapsible section per language. */
 #LangHeader {{
     background: {C['surface']};
     border: 1px solid {C['border']};
@@ -583,8 +548,6 @@ QListWidget::item:selected {{
     color: {C['text']};
     font-size: 13px;
 }}
-/* The voice table's heading row. The headings double as the sort control:
-   click one to sort by that column. */
 #VoiceHeader {{
     background: transparent;
     border-bottom: 1px solid {C['border']};
@@ -675,8 +638,6 @@ QToolTip {{
     padding: 6px 9px;
 }}
 
-/* The floating widget sits on top of other applications, so it is drawn as a
-   soft capsule rather than a second square window competing for attention. */
 #CompactCard {{
     background: {C['bg']};
     border: 1px solid {C['border']};
