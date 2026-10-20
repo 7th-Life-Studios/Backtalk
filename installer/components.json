@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "release_url_base": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0",
+  "components": [
+    {
+      "id": "app",
+      "iss_comp": "app",
+      "name": "Backtalk Application",
+      "archive": "app.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/app.zip",
+      "compressed_size": 272149487,
+      "installed_size": 820238680,
+      "sha256": "68bf49a115d40dd599776140ba875d2ec36448eef077318e25a7a16859c98b60"
+    },
+    {
+      "id": "engine",
+      "iss_comp": "engine",
+      "name": "Kokoro Voice Engine",
+      "archive": "engine.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/engine.zip",
+      "compressed_size": 851098194,
+      "installed_size": 2769004683,
+      "sha256": "670b1e2e0963dabfa8fb18e42b033700fa516aad2dd03d91c18e94216a312ab4"
+    },
+    {
+      "id": "translation_spanish",
+      "iss_comp": "translation\\spanish",
+      "name": "Translation: Spanish",
+      "archive": "pack-spanish.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-spanish.zip",
+      "compressed_size": 227308156,
+      "installed_size": 256505164,
+      "sha256": "d460b818b1a5c52c3c69d0ef97e5cee430f41cfbefca45743406bcecfe14e44a"
+    },
+    {
+      "id": "translation_french",
+      "iss_comp": "translation\\french",
+      "name": "Translation: French",
+      "archive": "pack-french.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-french.zip",
+      "compressed_size": 134287772,
+      "installed_size": 168055467,
+      "sha256": "6fe8ca09bb5a8f96554c8c5e5b21c2e7b50a49c4b0190c8d429660059002d9a7"
+    },
+    {
+      "id": "translation_hindi",
+      "iss_comp": "translation\\hindi",
+      "name": "Translation: Hindi",
+      "archive": "pack-hindi.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-hindi.zip",
+      "compressed_size": 210404262,
+      "installed_size": 237213816,
+      "sha256": "81a7d3de0378e563804b73700e088048575bdd9e874a5eca1f5f87a3bd558cee"
+    },
+    {
+      "id": "translation_italian",
+      "iss_comp": "translation\\italian",
+      "name": "Translation: Italian",
+      "archive": "pack-italian.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-italian.zip",
+      "compressed_size": 177530314,
+      "installed_size": 196102210,
+      "sha256": "f23f39f101425c74909857a7ed4a8efa4a82073218a15ca2a950fd94451da476"
+    },
+    {
+      "id": "translation_japanese",
+      "iss_comp": "translation\\japanese",
+      "name": "Translation: Japanese",
+      "archive": "pack-japanese.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-japanese.zip",
+      "compressed_size": 239247735,
+      "installed_size": 271573620,
+      "sha256": "d42b8fdf84f968d99399c2194016f428fef05e6eba9fe0727e601b57bfdd4c01"
+    },
+    {
+      "id": "translation_portuguese",
+      "iss_comp": "translation\\portuguese",
+      "name": "Translation: Portuguese",
+      "archive": "pack-portuguese.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-portuguese.zip",
+      "compressed_size": 137280873,
+      "installed_size": 168154458,
+      "sha256": "52627f9f222fdb433fdfbc9cf6351fddc80079a20f8a382979ded049aff42e32"
+    },
+    {
+      "id": "translation_chinese",
+      "iss_comp": "translation\\chinese",
+      "name": "Translation: Chinese",
+      "archive": "pack-chinese.zip",
+      "url": "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0/pack-chinese.zip",
+      "compressed_size": 146588979,
+      "installed_size": 173817314,
+      "sha256": "1607ac2aae5fba80969f7f70de5edd47f2ed63f1109e4bca3cf0508b9779e3aa"
+    }
+  ]
+}
