@@ -56,6 +56,12 @@ def _pair_html(original: str, translated: str, heading: str = "") -> str:
             f'{_esc(heading.upper())}</p>'
         )
     for src, dst in _pair_lines(original, translated):
+        if src.strip() == dst.strip():
+            parts.append(
+                f'<p style="margin:0 0 16px 0; color:{C["text"]};">'
+                f'{_esc(dst)}</p>'
+            )
+            continue
         parts.append(
             f'<p style="margin:0 0 3px 0; color:{C["text_muted"]};">'
             f'{_esc(src)}</p>'
@@ -466,6 +472,7 @@ class SplashScreen(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setFixedSize(560, 400)
+        self._drag_offset = None
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
@@ -540,6 +547,22 @@ class SplashScreen(QWidget):
     def set_progress(self, message: str, percent: int) -> None:
         self.status.setText(message)
         self.bar.setValue(percent)
+
+    def mousePressEvent(self, event) -> None:
+        if event.button() == Qt.LeftButton:
+            self._drag_offset = (
+                event.globalPosition().toPoint() - self.frameGeometry().topLeft()
+            )
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event) -> None:
+        if self._drag_offset is not None and event.buttons() & Qt.LeftButton:
+            self.move(event.globalPosition().toPoint() - self._drag_offset)
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event) -> None:
+        self._drag_offset = None
+        super().mouseReleaseEvent(event)
 
 
 class ReaderPage(QWidget):
@@ -636,7 +659,7 @@ class ReaderPage(QWidget):
         self.swap_btn.setObjectName("SwapButton")
         self.swap_btn.setIcon(svg_icon("swap", C["translate"], 18))
         self.swap_btn.setCursor(Qt.PointingHandCursor)
-        self.swap_btn.setToolTip("Read me the other one")
+        self.swap_btn.setToolTip("Switch the two voices")
         top.addWidget(self.swap_btn, 0, Qt.AlignBottom)
         self.swap_btn.hide()
 
@@ -1948,20 +1971,14 @@ class CompactWidget(QWidget):
         self.status_logo = WaveLogo(size=22, stroke=2.0)
         head.addWidget(self.status_logo)
         head.addStretch(1)
-        self.capture_btn = QPushButton("  Capture")
-        self.capture_btn.setObjectName("GhostButton")
-        self.capture_btn.setCheckable(True)
-        self.capture_btn.setIcon(svg_icon("highlight", C["text_muted"], 14))
-        self.capture_btn.setCursor(Qt.PointingHandCursor)
-        self.capture_btn.toggled.connect(self._on_capture_toggled)
-        head.addWidget(self.capture_btn)
-        self.main_btn = QPushButton()
-        self.main_btn.setObjectName("CompactButton")
-        self.main_btn.setIcon(svg_icon("expand", C["text_muted"], 14))
-        self.main_btn.setToolTip("Show main window")
-        self.main_btn.setCursor(Qt.PointingHandCursor)
-        self.main_btn.clicked.connect(self.show_main)
-        head.addWidget(self.main_btn)
+        self.expand_btn = QPushButton("  Expand")
+        self.expand_btn.setObjectName("GhostButton")
+        self.expand_btn.setIcon(svg_icon("expand", C["text_muted"], 14))
+        self.expand_btn.setToolTip("Show main window")
+        self.expand_btn.setCursor(Qt.PointingHandCursor)
+        self.expand_btn.clicked.connect(self.show_main)
+        head.addWidget(self.expand_btn)
+        head.addStretch(1)
         self.min_btn = QPushButton()
         self.min_btn.setObjectName("CompactButton")
         self.min_btn.setIcon(svg_icon("minimise", C["text_muted"], 14))
@@ -2048,11 +2065,17 @@ class CompactWidget(QWidget):
         lay.addLayout(vol_row)
 
         auto_row = QHBoxLayout()
-        auto_row.addStretch(1)
-        self.autoplay = QCheckBox("Auto-speak on capture")
+        self.autoplay = QCheckBox("Auto-speak")
         self.autoplay.toggled.connect(self.autoplay_changed)
         auto_row.addWidget(self.autoplay)
         auto_row.addStretch(1)
+        self.capture_btn = QPushButton("  Capture")
+        self.capture_btn.setObjectName("GhostButton")
+        self.capture_btn.setCheckable(True)
+        self.capture_btn.setIcon(svg_icon("highlight", C["text_muted"], 14))
+        self.capture_btn.setCursor(Qt.PointingHandCursor)
+        self.capture_btn.toggled.connect(self._on_capture_toggled)
+        auto_row.addWidget(self.capture_btn)
         lay.addLayout(auto_row)
 
         self.grip = QWidget(self)
@@ -2223,9 +2246,9 @@ class CompactWidget(QWidget):
         self.set_playing(playing)
         self.back_btn.setIcon(svg_icon("back10", C["text"], 20))
         self.fwd_btn.setIcon(svg_icon("fwd10", C["text"], 20))
-        self.main_btn.setIcon(svg_icon("expand", C["text_muted"], 14))
         self.min_btn.setIcon(svg_icon("minimise", C["text_muted"], 14))
         self.close_btn.setIcon(svg_icon("clear", C["text_muted"], 13))
+        self.expand_btn.setIcon(svg_icon("expand", C["text_muted"], 14))
         self._paint_capture(self.capture_btn.isChecked())
         self.status_logo.refresh_theme()
 
@@ -2314,7 +2337,6 @@ class MainWindow(QWidget):
         self._server_voice_count: int = 0
         self._tx_generation = 0
         self._tx_source_lang: str | None = None
-        self._speaking_original = False
         self._translation_used = False
         self._reported_recovery = False
         self._reported_dir_fallback = False
@@ -2397,14 +2419,6 @@ class MainWindow(QWidget):
 
         lay.addStretch(1)
 
-        self.widget_btn = QPushButton("  Compact view")
-        self.widget_btn.setObjectName("SidebarToggle")
-        self.widget_btn.setCheckable(True)
-        self.widget_btn.setCursor(Qt.PointingHandCursor)
-        self.widget_btn.setIcon(svg_icon("reader", C["text_muted"], 17))
-        lay.addWidget(self.widget_btn)
-        lay.addSpacing(8)
-
         self.server_hint = _label("", "SpokenText")
         self.server_hint.setWordWrap(True)
         lay.addWidget(self.server_hint)
@@ -2440,6 +2454,15 @@ class MainWindow(QWidget):
         self.refresh_btn.setFixedSize(36, 36)
         self.refresh_btn.setIcon(svg_icon("refresh", C["text_muted"], 18))
         lay.addWidget(self.refresh_btn)
+
+        lay.addStretch(1)
+
+        self.widget_btn = QPushButton("  Compact view")
+        self.widget_btn.setObjectName("GhostButton")
+        self.widget_btn.setCheckable(True)
+        self.widget_btn.setCursor(Qt.PointingHandCursor)
+        self.widget_btn.setIcon(svg_icon("compact", C["text_muted"], 17))
+        lay.addWidget(self.widget_btn)
 
         lay.addStretch(1)
 
@@ -2508,7 +2531,7 @@ class MainWindow(QWidget):
         self.capture.captured.connect(self._on_captured)
 
         self.sidebar_toggle.clicked.connect(self._toggle_sidebar)
-        self.widget_btn.clicked.connect(self._toggle_compact)
+        self.widget_btn.clicked.connect(self._open_compact)
         self.refresh_btn.clicked.connect(self._on_refresh)
         self.client.engine_died.connect(self._on_engine_died)
         self.client.engine_reloading.connect(self._on_engine_reloading)
@@ -2834,7 +2857,6 @@ class MainWindow(QWidget):
     def _speak(self, text: str, record: bool = True) -> None:
         if not text.strip():
             return
-        self._speaking_original = False
         self._source_text = text
         target = translatelib.voice_language(self._voice)
 
@@ -2868,7 +2890,6 @@ class MainWindow(QWidget):
         if generation != self._tx_generation:
             return
         self.translate_btn.set_working(False)
-        self._speaking_original = False
         changed = result.text.strip() != self._source_text.strip()
         if result.translated and changed:
             self._tx_source_lang = result.source
@@ -2929,27 +2950,23 @@ class MainWindow(QWidget):
     def _on_swap(self) -> None:
         if not self._server_ready:
             return
-        original = self.reader.active_text()
-        if not original.strip():
+        original = self.reader.src_voice_box.currentData()
+        translation = self.reader.voice_box.currentData()
+        if not original or not translation:
+            self._flash_status("Pick both voices first", C["text_muted"])
             return
-        self._speaking_original = not self._speaking_original
-        if self._speaking_original:
-            voice = self.reader.src_voice_box.currentData()
-            if not voice:
-                self._flash_status("No voice for the original", C["text_muted"])
-                self._speaking_original = False
-                return
-            if not translatelib.can_pronounce(voice, original):
-                self._flash_status(
-                    "That voice may not read the original well", C["working"]
-                )
-            self.player.reset()
-            self._tx_generation += 1
-            if self.player.load(original, voice, self._speed):
-                self._flash_status("Reading the original", C["translate"])
-        else:
-            self.player.reset()
-            self._speak(original, record=False)
+        text = self.reader.active_text()
+        self.player.reset()
+        box = self.reader.src_voice_box
+        box.blockSignals(True)
+        box.setCurrentIndex(box.findData(translation))
+        box.blockSignals(False)
+        self._store("source_voice", translation)
+        self._on_voice_chosen(original)
+        if not text.strip():
+            return
+        self.reader.clear_translation_pair()
+        self._speak(text, record=False)
 
     def _on_show_translation_toggled(self, on: bool) -> None:
         self._store("show_translation", bool(on))
@@ -3213,7 +3230,6 @@ class MainWindow(QWidget):
             btn = self.nav_group.button(index)
             if btn is not None:
                 btn.setIcon(svg_icon(key, C["text_muted"], 19))
-        self.widget_btn.setIcon(svg_icon("reader", C["text_muted"], 17))
         self.sidebar_toggle.setIcon(svg_icon("menu", C["text"], 20))
         self.capture_btn.setIcon(svg_icon(
             "highlight",
@@ -3226,6 +3242,11 @@ class MainWindow(QWidget):
             C["translate_on"] if self.translate_btn.isChecked()
             else C["text_muted"],
             18,
+        ))
+        self.widget_btn.setIcon(svg_icon(
+            "compact",
+            C["bg"] if self.widget_btn.isChecked() else C["text_muted"],
+            17,
         ))
         r = self.reader
         r.swap_btn.setIcon(svg_icon("swap", C["translate"], 18))
@@ -3416,6 +3437,12 @@ class MainWindow(QWidget):
         self._restore_size = QSize(max(self.width(), 940),
                                    max(self.height(), 700))
         self._toggle_compact()
+        self.hide()
+
+    def _open_compact(self) -> None:
+        if not (self._compact and self._compact.isVisible()):
+            self._toggle_compact()
+        self._restore_size = self.size()
         self.hide()
 
     def _toggle_compact(self) -> None:

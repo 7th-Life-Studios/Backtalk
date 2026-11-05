@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass
+from functools import partial
 
 from .cjk_forms import JA_ONLY_CHARS, ZH_ONLY_CHARS
 
@@ -20,10 +21,6 @@ VOICE_PREFIX_LANG: dict[str, tuple[str, str]] = {
 SPEAKABLE = ("en", "es", "fr", "hi", "it", "ja", "pt", "zh")
 
 BRIDGE_VIA: dict[str, str] = {"es": "pt"}
-
-MIN_DETECT_CHARS = 12
-
-MIN_SEGMENT_CHARS = 20
 
 MIN_LATIN_SWITCH_CHARS = 40
 
@@ -238,6 +235,8 @@ class Translator:
         if self._available is None:
             try:
                 import argostranslate.translate
+                import stanza
+                stanza.Pipeline = partial(stanza.Pipeline, download_method=None)
                 self._available = True
             except Exception:
                 self._available = False
@@ -267,7 +266,7 @@ class Translator:
 
     def detect(self, text: str) -> str | None:
         stripped = text.strip()
-        if len(stripped) < MIN_DETECT_CHARS:
+        if not stripped:
             return None
         if self._langid is None:
             try:
@@ -353,21 +352,24 @@ class Translator:
             return by_script
         if not statistical:
             return None
-        if len(text.strip()) < MIN_SEGMENT_CHARS:
-            return None
         return self.detect(text)
+
+    def block_languages(self, text: str) -> tuple[list[str], list[str | None]]:
+        segments = segment(text)
+        has_kana = any(_script(c) == "kana" for c in text)
+        langs = [script_language(s, has_kana) for s in segments]
+        latin = [i for i, s in enumerate(segments)
+                 if langs[i] is None and "latin" in scripts_in(s)]
+        block = self.detect("".join(segments[i] for i in latin)) if latin else None
+        for i in latin:
+            langs[i] = block
+        return segments, langs
 
     def needs_translation(self, text: str, target: str) -> bool:
         if not text.strip() or target not in SPEAKABLE:
             return False
-        has_kana = any(_script(c) == "kana" for c in text)
-        for chunk in segment(text):
-            if not chunk.strip():
-                continue
-            lang = self.segment_language(chunk, has_kana)
-            if lang and lang != target:
-                return True
-        return False
+        _segments, langs = self.block_languages(text)
+        return any(lang and lang != target for lang in langs)
 
     def translate_text(self, text: str, target: str) -> Result:
         if not text.strip():
@@ -375,10 +377,7 @@ class Translator:
         if target not in SPEAKABLE:
             return Result(text, None, target, False, f"{target} not speakable")
 
-        segments = segment(text)
-        has_kana = any(_script(c) == "kana" for c in text)
-
-        langs = [self.segment_language(s, has_kana) for s in segments]
+        segments, langs = self.block_languages(text)
         foreign = {l for l in langs if l and l != target}
 
         if not foreign:

@@ -1,7 +1,7 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 0, 0, 0),
-    prodvers=(1, 0, 0, 0),
+    filevers=(1, 0, 1, 0),
+    prodvers=(1, 0, 1, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -18,11 +18,11 @@ VSVersionInfo(
             StringStruct(u'CompanyName', u'7th Life Studios'),
             StringStruct(u'LegalCopyright', u'Copyright (c) 2026 7th Life Studios'),
             StringStruct(u'FileDescription', u'Backtalk'),
-            StringStruct(u'FileVersion', u'1.0.0'),
+            StringStruct(u'FileVersion', u'1.0.1'),
             StringStruct(u'InternalName', u'Backtalk'),
             StringStruct(u'OriginalFilename', u'Backtalk.exe'),
             StringStruct(u'ProductName', u'Backtalk'),
-            StringStruct(u'ProductVersion', u'1.0.0'),
+            StringStruct(u'ProductVersion', u'1.0.1'),
           ]
         )
       ]

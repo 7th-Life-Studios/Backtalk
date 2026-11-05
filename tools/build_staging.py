@@ -21,6 +21,7 @@ PyInstaller.__main__.run([
     f"--add-data={PROFILES}{os.pathsep}data",
     f"--paths={ROOT}",
     "--hidden-import=backtalk.app",
+    "--collect-data=py3langid",
     f"--version-file={ROOT / 'tools' / 'version_info.py'}",
     f"--distpath={OUT}",
     f"--workpath={ROOT / 'tools' / 'build'}",
@@ -63,5 +64,14 @@ print("")
 print(f"app modules in the PYZ: {len(mods)}")
 for m in mods:
     print("   ", m)
+problems = []
 if len(mods) < 5:
-    print("WARNING: this looks like a launcher shim, not an installable app")
+    problems.append("this looks like a launcher shim, not an installable app")
+for rel in ("py3langid/data/model.plzma", "data/voice_profiles.json", "assets/backtalk.ico"):
+    if not (app_dir / "_internal" / rel).is_file():
+        problems.append(f"missing from the build: _internal/{rel}")
+if problems:
+    for p in problems:
+        print("BUILD FAILED:", p)
+    sys.exit(1)
+print("required files present")

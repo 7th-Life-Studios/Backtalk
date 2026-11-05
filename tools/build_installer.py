@@ -23,7 +23,7 @@ INSTALLER_DIR = ROOT / "installer"
 OUTPUT_DIR = DIST / "installer"
 
 ARGOS_USER_PACKS = Path.home() / ".local" / "share" / "argos-translate" / "packages"
-DEFAULT_URL_BASE = "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.0"
+DEFAULT_URL_BASE = "https://github.com/7th-Life-Studios/Backtalk/releases/download/v1.0.1"
 
 LANG_PACKS: dict[str, dict[str, any]] = {
     "spanish": {
@@ -113,6 +113,7 @@ def stale_reasons(root: Path = ROOT) -> list[str]:
             root / "data" / "voice_profiles.json",
             root / "assets" / "backtalk.ico",
             root / "tools" / "version_info.py",
+            root / "tools" / "build_staging.py",
         ]
         sources += [
             f for f in (root / "backtalk").rglob("*")
@@ -268,7 +269,7 @@ def write_manifests(components: list[dict[str, any]], url_base: str) -> None:
     INSTALLER_DIR.mkdir(parents=True, exist_ok=True)
 
     manifest_data = {
-        "version": "1.0.0",
+        "version": "1.0.1",
         "release_url_base": url_base,
         "components": components,
     }

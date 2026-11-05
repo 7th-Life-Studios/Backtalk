@@ -2,7 +2,7 @@
 #include "components.iss"
 
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.0.1"
 #endif
 
 [Setup]
@@ -37,8 +37,8 @@ OutputBaseFilename=Backtalk-Setup
 #endif
 OutputDir=..\tools\dist\installer
 
-VersionInfoVersion=1.0.0.0
-VersionInfoProductVersion=1.0.0.0
+VersionInfoVersion=1.0.1.0
+VersionInfoProductVersion=1.0.1.0
 VersionInfoDescription=Backtalk Setup
 VersionInfoProductName=Backtalk
 VersionInfoCompany=7th Life Studios

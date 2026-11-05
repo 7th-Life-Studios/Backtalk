@@ -74,8 +74,16 @@ _ICONS = {
         '<path d="M16 12 L19 15 L16 18" />'
     ),
     "expand": (
-        '<rect x="4" y="4" width="16" height="16" rx="2" />'
-        '<path d="M9 4 L9 20" />'
+        '<polyline points="15 3 21 3 21 9" />'
+        '<polyline points="9 21 3 21 3 15" />'
+        '<line x1="21" y1="3" x2="14" y2="10" />'
+        '<line x1="3" y1="21" x2="10" y2="14" />'
+    ),
+    "compact": (
+        '<polyline points="4 14 10 14 10 20" />'
+        '<polyline points="20 10 14 10 14 4" />'
+        '<line x1="14" y1="10" x2="21" y2="3" />'
+        '<line x1="3" y1="21" x2="10" y2="14" />'
     ),
     "menu": (
         '<rect x="3" y="4" width="18" height="16" rx="2" />'
